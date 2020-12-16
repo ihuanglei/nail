@@ -1,0 +1,115 @@
+package org.huanglei.nail;
+
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.huanglei.nail.okhttp.NailHttpClientHelper;
+import org.huanglei.nail.okhttp.NailRequestBuilder;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Map;
+
+public class Nail {
+
+    public final static String URL_ENCODING = "UTF-8";
+
+    /**
+     * 整理url内容
+     */
+    private static String composeUrl(NailRequest request) throws UnsupportedEncodingException {
+        String host = request.getHost();
+        NailRequest.Protocol protocol = request.getProtocol() == null ? NailRequest.Protocol.HTTP : request.getProtocol();
+        StringBuilder sb = new StringBuilder();
+        sb.append(protocol);
+        sb.append("://").append(host);
+        if (request.getPath() != null) {
+            sb.append(request.getPath());
+        }
+        Map<String, String> queries = request.getQuery();
+        if (queries.size() > 0) {
+            if (sb.indexOf("?") >= 1) {
+                sb.append("&");
+            } else {
+                sb.append("?");
+            }
+            for (Map.Entry<String, String> entry : queries.entrySet()) {
+                String key = entry.getKey();
+                String val = entry.getValue();
+                if (val == null || "null".equals(val)) {
+                    continue;
+                }
+                sb.append(URLEncoder.encode(key, URL_ENCODING));
+                sb.append("=");
+                sb.append(URLEncoder.encode(val, URL_ENCODING));
+                sb.append("&");
+            }
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 设置代理
+     */
+    private static Map<String, String> setProxyAuthorization(Map<String, String> header, Object httpsProxy) throws MalformedURLException {
+        if (httpsProxy != null) {
+            String str = String.valueOf(httpsProxy);
+            if (str != null && !str.isEmpty()) {
+                URL proxyUrl = new URL(str);
+                String userInfo = proxyUrl.getUserInfo();
+                if (userInfo != null) {
+                    String[] userMessage = userInfo.split(":");
+                    String credential = Credentials.basic(userMessage[0], userMessage[1]);
+                    header.put("Proxy-Authorization", credential);
+                }
+            }
+        }
+        return header;
+    }
+
+    /**
+     * http请求
+     *
+     * @param request
+     * @param runtimeOptions
+     * @return
+     * @throws Exception
+     */
+    public static NailResponse request(NailRequest request, Map<String, Object> runtimeOptions) throws Exception {
+        String urlString = composeUrl(request);
+        URL url = new URL(urlString);
+        OkHttpClient okHttpClient = NailHttpClientHelper.getOkHttpClient(url.getHost(), url.getPort(), runtimeOptions);
+        Map<String, String> headers = setProxyAuthorization(request.getHeaders(), runtimeOptions.get("httpsProxy"));
+        Request okRequest = new NailRequestBuilder().url(url).header(headers).build(request);
+        Response okResponse = okHttpClient.newCall(okRequest).execute();
+        return new NailResponse(okResponse);
+    }
+
+    /**
+     * http请求
+     *
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    public static NailResponse request(NailRequest request) throws Exception {
+        return request(request, Collections.emptyMap());
+    }
+
+    public static InputStream toReadable(String string) {
+        return toReadable(string.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static InputStream toReadable(byte[] byteArray) {
+        return new ByteArrayInputStream(byteArray);
+    }
+
+}
