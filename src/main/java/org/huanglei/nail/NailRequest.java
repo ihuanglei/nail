@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class NailRequest {
 
+    private static String OS_INFO = "(" + System.getProperty("os.name").toLowerCase() + ")";
+
     public enum Method {
         POST, PUT, GET, DELETE, PATCH
     }
@@ -30,12 +32,12 @@ public class NailRequest {
 
     private InputStream body;
 
-
     public NailRequest() {
         protocol = Protocol.HTTP;
         method = Method.GET;
         port = 80;
         headers = new HashMap<>();
+        headers.put("User-Agent", "nail/0.0.1 " + OS_INFO);
         query = new HashMap<>();
     }
 
@@ -58,7 +60,7 @@ public class NailRequest {
 
     public NailRequest setHost(String host) {
         this.host = host;
-        return addHeader("host", host);
+        return putHeader("Host", host);
     }
 
     public Integer getPort() {
@@ -115,12 +117,12 @@ public class NailRequest {
         return this;
     }
 
-    public NailRequest addHeader(String key, String value) {
+    public NailRequest putHeader(String key, String value) {
         headers.put(key, value);
         return this;
     }
 
-    public NailRequest addQuery(String key, String value) {
+    public NailRequest putQuery(String key, String value) {
         query.put(key, value);
         return this;
     }
@@ -128,16 +130,16 @@ public class NailRequest {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Protocol:").append(this.protocol).append("\n");
-        sb.append("Port:").append(this.port).append("\n");
+        sb.append("Protocol: ").append(this.protocol).append("\n");
+        sb.append("Port: ").append(this.port).append("\n");
         sb.append(this.method).append(" ").append(this.path).append("\n");
-        sb.append("Query:").append("\n");
+        sb.append("Query: ").append("\n");
         for (Map.Entry<String, String> e : this.query.entrySet()) {
-            sb.append("  ").append(e.getKey()).append(":").append(e.getValue()).append("\n");
+            sb.append("  ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
         }
-        sb.append("Header:").append("\n");
+        sb.append("Header: ").append("\n");
         for (Map.Entry<String, String> e : this.headers.entrySet()) {
-            sb.append("  ").append(e.getKey()).append(":").append(e.getValue()).append("\n");
+            sb.append("  ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
         }
         return sb.toString();
     }
