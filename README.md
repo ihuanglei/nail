@@ -6,11 +6,6 @@
 
 ```java
 
-NailRequest request = NailRequest.create()
-        .setHost("www.baidu.com")
-        .setPath("/s")
-        .addQuery("wd", "nail");
-NailResponse response = Nail.request(request);
 
 ```
 
