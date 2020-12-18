@@ -37,8 +37,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/ihuanglei/nail.git</connection>
-        <developerConnection>scm:git:https://github.com/ihuanglei/nail.git</developerConnection>
+        <connection>scm:git:git@github.com:ihuanglei/nail.git</connection>
+        <developerConnection>scm:git:git@github.com:ihuanglei/nail.git</developerConnection>
         <url>https://github.com/ihuanglei/nail</url>
         <tag>v0.0.1</tag>
     </scm>
