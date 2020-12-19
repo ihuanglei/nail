@@ -26,7 +26,7 @@ public class Nail {
      */
     private static String composeUrl(NailRequest request) throws UnsupportedEncodingException {
         String host = request.getHost();
-        NailRequest.Protocol protocol = request.getProtocol() == null ? NailRequest.Protocol.HTTP : request.getProtocol();
+        NailRequest.Protocol protocol = request.getProtocol();
         StringBuilder sb = new StringBuilder();
         sb.append(protocol);
         sb.append("://").append(host);
@@ -84,11 +84,10 @@ public class Nail {
      * @throws Exception
      */
     public static NailResponse request(NailRequest request, Map<String, Object> runtimeOptions) throws Exception {
-        String urlString = composeUrl(request);
-        URL url = new URL(urlString);
+        String urlStr = composeUrl(request);
+        URL url = new URL(urlStr);
         OkHttpClient okHttpClient = NailHttpClientHelper.getOkHttpClient(url.getHost(), url.getPort(), runtimeOptions);
-        Map<String, String> headers = setProxyAuthorization(request.getHeaders(), runtimeOptions.get("httpsProxy"));
-        Request okRequest = new NailRequestBuilder().url(url).header(headers).build(request);
+        Request okRequest = new NailRequestBuilder().url(url).header(setProxyAuthorization(request.getHeader(), runtimeOptions.get("httpsProxy"))).build(request);
         Response okResponse = okHttpClient.newCall(okRequest).execute();
         return new NailResponse(okResponse);
     }

@@ -26,7 +26,7 @@ public class NailRequest {
 
     private Method method;
 
-    private Map<String, String> headers;
+    private Map<String, String> header;
 
     private Map<String, String> query;
 
@@ -36,8 +36,8 @@ public class NailRequest {
         protocol = Protocol.HTTP;
         method = Method.GET;
         port = 80;
-        headers = new HashMap<>();
-        headers.put("User-Agent", "nail/0.0.1 " + OS_INFO);
+        header = new HashMap<>();
+        header.put("User-Agent", "nail/0.0.1 " + OS_INFO);
         query = new HashMap<>();
     }
 
@@ -46,10 +46,13 @@ public class NailRequest {
     }
 
     public Protocol getProtocol() {
+        if (protocol == null) {
+            return Protocol.HTTP;
+        }
         return protocol;
     }
 
-    public NailRequest setProtocol(Protocol protocol) {
+    public NailRequest protocol(Protocol protocol) {
         this.protocol = protocol;
         return this;
     }
@@ -58,16 +61,16 @@ public class NailRequest {
         return host;
     }
 
-    public NailRequest setHost(String host) {
+    public NailRequest host(String host) {
         this.host = host;
-        return putHeader("Host", host);
+        return header("Host", host);
     }
 
     public Integer getPort() {
         return port;
     }
 
-    public NailRequest setPort(Integer port) {
+    public NailRequest port(Integer port) {
         this.port = port;
         return this;
     }
@@ -76,26 +79,29 @@ public class NailRequest {
         return path;
     }
 
-    public NailRequest setPath(String path) {
+    public NailRequest path(String path) {
         this.path = path;
         return this;
     }
 
     public Method getMethod() {
+        if (method == null) {
+            return Method.GET;
+        }
         return method;
     }
 
-    public NailRequest setMethod(Method method) {
+    public NailRequest method(Method method) {
         this.method = method;
         return this;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public Map<String, String> getHeader() {
+        return header;
     }
 
-    public NailRequest setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public NailRequest header(Map<String, String> headers) {
+        this.header = headers;
         return this;
     }
 
@@ -103,7 +109,7 @@ public class NailRequest {
         return query;
     }
 
-    public NailRequest setQuery(Map<String, String> query) {
+    public NailRequest query(Map<String, String> query) {
         this.query = query;
         return this;
     }
@@ -112,17 +118,17 @@ public class NailRequest {
         return body;
     }
 
-    public NailRequest setBody(InputStream body) {
+    public NailRequest body(InputStream body) {
         this.body = body;
         return this;
     }
 
-    public NailRequest putHeader(String key, String value) {
-        headers.put(key, value);
+    public NailRequest header(String key, String value) {
+        header.put(key, value);
         return this;
     }
 
-    public NailRequest putQuery(String key, String value) {
+    public NailRequest query(String key, String value) {
         query.put(key, value);
         return this;
     }
@@ -138,7 +144,7 @@ public class NailRequest {
             sb.append("  ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
         }
         sb.append("Header: ").append("\n");
-        for (Map.Entry<String, String> e : this.headers.entrySet()) {
+        for (Map.Entry<String, String> e : this.header.entrySet()) {
             sb.append("  ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
         }
         return sb.toString();
