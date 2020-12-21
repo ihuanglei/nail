@@ -1,15 +1,32 @@
 # Nail
 
-
-基于OKHttp3 封装的工具类。支持配置Header、配置SSL、配置proxy、Cookie等
+## Installation
 
 ```xml
 <dependency>
     <groupId>org.huanglei</groupId>
     <artifactId>nail</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.3</version>
 </dependency>
 ```
 
+## Issues
+[Opening an Issue](https://github.com/ihuanglei/nail/issues), Issues not conforming to the guidelines may be closed immediately.
 
+## License
 
+```
+Copyright 2020-present huanglei.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License
+```
