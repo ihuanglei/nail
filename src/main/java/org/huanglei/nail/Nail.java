@@ -30,10 +30,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Map;
 
-public class Nail {
+public final class Nail {
 
     public final static String URL_ENCODING = "UTF-8";
 
@@ -75,14 +74,13 @@ public class Nail {
     /**
      * 设置代理
      */
-    private static Map<String, String> setProxyAuthorization(Map<String, String> header, Object httpsProxy) throws MalformedURLException {
-        if (httpsProxy != null) {
-            String str = String.valueOf(httpsProxy);
-            if (str != null && !str.isEmpty()) {
-                URL proxyUrl = new URL(str);
-                String userInfo = proxyUrl.getUserInfo();
-                if (userInfo != null) {
-                    String[] userMessage = userInfo.split(":");
+    private static Map<String, String> setProxyAuthorization(Map<String, String> header, String proxy) throws MalformedURLException {
+        if (proxy != null && !proxy.isEmpty()) {
+            URL proxyUrl = new URL(proxy);
+            String userInfo = proxyUrl.getUserInfo();
+            if (userInfo != null) {
+                String[] userMessage = userInfo.split(":");
+                if (userMessage.length > 1) {
                     String credential = Credentials.basic(userMessage[0], userMessage[1]);
                     header.put("Proxy-Authorization", credential);
                 }
@@ -95,15 +93,15 @@ public class Nail {
      * http请求
      *
      * @param request
-     * @param runtimeOptions
+     * @param option
      * @return
      * @throws Exception
      */
-    public static NailResponse request(NailRequest request, Map<String, Object> runtimeOptions) throws Exception {
+    public static NailResponse request(NailRequest request, NailOption option) throws Exception {
         String urlStr = composeUrl(request);
         URL url = new URL(urlStr);
-        OkHttpClient okHttpClient = NailHttpClientHelper.getOkHttpClient(url.getHost(), url.getPort(), runtimeOptions);
-        Request okRequest = new NailRequestBuilder().url(url).header(setProxyAuthorization(request.getHeader(), runtimeOptions.get("httpsProxy"))).build(request);
+        OkHttpClient okHttpClient = NailHttpClientHelper.getOkHttpClient(url.getHost(), url.getPort(), option);
+        Request okRequest = new NailRequestBuilder().url(url).header(setProxyAuthorization(request.getHeader(), option.getProxy())).build(request);
         Response okResponse = okHttpClient.newCall(okRequest).execute();
         return new NailResponse(okResponse);
     }
@@ -116,7 +114,7 @@ public class Nail {
      * @throws Exception
      */
     public static NailResponse request(NailRequest request) throws Exception {
-        return request(request, Collections.emptyMap());
+        return request(request, NailOption.create());
     }
 
     public static InputStream toReadable(String string) {

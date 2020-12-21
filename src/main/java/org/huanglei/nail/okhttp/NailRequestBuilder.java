@@ -31,13 +31,13 @@ public class NailRequestBuilder {
     }
 
     public NailRequestBuilder url(URL url) {
-        this.builder.url(url);
+        builder.url(url);
         return this;
     }
 
     public NailRequestBuilder header(Map<String, String> headers) {
         for (Map.Entry<String, String> entry : headers.entrySet()) {
-            this.builder.header(entry.getKey(), entry.getValue());
+            builder.header(entry.getKey(), entry.getValue());
         }
         return this;
     }
@@ -46,11 +46,11 @@ public class NailRequestBuilder {
         NailRequestBody requestBody;
         switch (request.getMethod()) {
             case DELETE:
-                this.builder.delete();
+                builder.delete();
                 break;
             case POST:
                 requestBody = new NailRequestBody(request);
-                this.builder.post(requestBody);
+                builder.post(requestBody);
                 break;
             case PUT:
                 requestBody = new NailRequestBody(request);
@@ -58,13 +58,13 @@ public class NailRequestBuilder {
                 break;
             case PATCH:
                 requestBody = new NailRequestBody(request);
-                this.builder.patch(requestBody);
+                builder.patch(requestBody);
                 break;
             default:
-                this.builder.get();
+                builder.get();
                 break;
         }
-        return this.builder.build();
+        return builder.build();
     }
 
 }

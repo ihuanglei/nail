@@ -42,6 +42,8 @@ public class NailRequest {
 
     private Method method;
 
+    private String contentType;
+
     private Map<String, String> header;
 
     private Map<String, String> query;
@@ -52,8 +54,10 @@ public class NailRequest {
         protocol = Protocol.HTTP;
         method = Method.GET;
         port = 80;
+        contentType = "application/json; charset=UTF-8;";
         header = new HashMap<>();
         header.put("User-Agent", "nail/0.0.1 " + OS_INFO);
+        header.put("Content-Type", contentType);
         query = new HashMap<>();
     }
 
@@ -147,6 +151,17 @@ public class NailRequest {
     public NailRequest query(String key, String value) {
         query.put(key, value);
         return this;
+    }
+
+
+    public NailRequest contentType(String contentType) {
+        this.contentType = contentType;
+        header.put("Content-Type", contentType);
+        return this;
+    }
+
+    public String getContentType() {
+        return contentType;
     }
 
     @Override

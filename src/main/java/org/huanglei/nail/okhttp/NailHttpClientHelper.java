@@ -17,20 +17,19 @@
 package org.huanglei.nail.okhttp;
 
 import okhttp3.OkHttpClient;
+import org.huanglei.nail.NailOption;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class NailHttpClientHelper {
 
     private static ConcurrentHashMap<String, OkHttpClient> clients = new ConcurrentHashMap<>();
 
-    public static OkHttpClient getOkHttpClient(final String host, final int port, Map<String, Object> map) throws Exception {
+    public static OkHttpClient getOkHttpClient(final String host, final int port, NailOption option) throws Exception {
         String key;
-        if (map.get("httpProxy") != null || map.get("httpsProxy") != null) {
-            Object urlString = map.get("httpProxy") == null ? map.get("httpsProxy") : map.get("httpProxy");
-            URL url = new URL(String.valueOf(urlString));
+        if (option.getProxy() != null && !option.getProxy().isEmpty()) {
+            URL url = new URL(option.getProxy());
             key = getClientKey(url.getHost(), url.getPort());
         } else {
             key = getClientKey(host, port);
@@ -38,15 +37,22 @@ public class NailHttpClientHelper {
 
         OkHttpClient client = clients.get(key);
         if (client == null) {
-            client = createOkHttpClient(map);
+            client = createOkHttpClient(option);
             clients.put(key, client);
         }
         return client;
     }
 
-    private static OkHttpClient createOkHttpClient(Map<String, Object> map) {
+    private static OkHttpClient createOkHttpClient(NailOption option) {
         NailHttpClientBuilder builder = new NailHttpClientBuilder();
-        return builder.connectTimeout(map).readTimeout(map).connectionPool(map).certificate(map).proxy(map).build();
+        return builder
+                .showLog(option.isShowLog())
+                .connectTimeout(option.getConnectTimeout())
+                .readTimeout(option.getReadTimeout())
+                .connectionPool(option.getMaxIdleConns())
+                .certificate(option.isIgnoreSSL())
+                .proxy(option.getProxy())
+                .build();
     }
 
     private static String getClientKey(String host, int port) {

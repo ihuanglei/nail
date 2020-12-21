@@ -31,7 +31,7 @@ public class NailRequestBody extends RequestBody {
 
     public NailRequestBody(NailRequest request) {
         this.inputStream = request.getBody();
-        this.contentType = request.getHeader().get("content-type");
+        this.contentType = request.getContentType();
     }
 
     @Override
@@ -65,5 +65,6 @@ public class NailRequestBody extends RequestBody {
         while ((bytesRead = inputStream.read(buffer)) != -1) {
             bufferedSink.write(buffer, 0, bytesRead);
         }
+        inputStream.reset();
     }
 }

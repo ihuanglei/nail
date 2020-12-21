@@ -26,9 +26,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class NailHttpClientBuilder {
@@ -39,46 +39,40 @@ public class NailHttpClientBuilder {
         builder = new OkHttpClient().newBuilder();
     }
 
-    public NailHttpClientBuilder connectTimeout(Map<String, Object> map) {
-        Object object = map.get("connectTimeout");
-        long timeout;
-        try {
-            timeout = Long.parseLong(String.valueOf(object));
-        } catch (Exception e) {
-            return this;
+    public NailHttpClientBuilder showLog(Boolean isShowLog) {
+        if (isShowLog != null && isShowLog) {
+            this.builder.addNetworkInterceptor(new NailLogInterceptor());
         }
-        this.builder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    public NailHttpClientBuilder readTimeout(Map<String, Object> map) {
-        Object object = map.get("readTimeout");
-        long timeout;
-        try {
-            timeout = Long.parseLong(String.valueOf(object));
-        } catch (Exception e) {
-            return this;
+    public NailHttpClientBuilder connectTimeout(Long connectTimeout) {
+        if (connectTimeout != null) {
+            this.builder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         }
-        this.builder.readTimeout(timeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    public NailHttpClientBuilder connectionPool(Map<String, Object> map) {
-        Object maxIdleConns = map.get("maxIdleConns");
-        int maxIdleConnections;
-        try {
-            maxIdleConnections = Integer.parseInt(String.valueOf(maxIdleConns));
-        } catch (Exception e) {
-            maxIdleConnections = 5;
+    public NailHttpClientBuilder readTimeout(Long readTimeout) {
+        if (readTimeout != null) {
+            this.builder.readTimeout(readTimeout, TimeUnit.MILLISECONDS);
+        }
+        return this;
+    }
+
+    public NailHttpClientBuilder connectionPool(Integer maxIdleConns) {
+        int maxIdleConnections = 5;
+        if (maxIdleConns != null) {
+            maxIdleConnections = maxIdleConns;
         }
         ConnectionPool connectionPool = new ConnectionPool(maxIdleConnections, 10000L, TimeUnit.MILLISECONDS);
         this.builder.connectionPool(connectionPool);
         return this;
     }
 
-    public NailHttpClientBuilder certificate(Map<String, Object> map) {
+    public NailHttpClientBuilder certificate(Boolean ignoreSSL) {
         try {
-            if (Boolean.parseBoolean(String.valueOf(map.get("ignoreSSL")))) {
+            if (ignoreSSL != null && ignoreSSL) {
                 X509TrustManager compositeX509TrustManager = new X509TrustManagerImp();
                 SSLContext sslContext = SSLContext.getInstance("TLS");
                 sslContext.init(null, new TrustManager[]{compositeX509TrustManager}, new java.security.SecureRandom());
@@ -92,15 +86,14 @@ public class NailHttpClientBuilder {
 
     }
 
-    public NailHttpClientBuilder proxy(Map<String, Object> map) {
+    public NailHttpClientBuilder proxy(String proxy) {
         try {
-            if (null != map.get("httpProxy") || null != map.get("httpsProxy")) {
-                Object urlString = null == map.get("httpProxy") ? map.get("httpsProxy") : map.get("httpProxy");
-                URL url = new URL(String.valueOf(urlString));
+            if (proxy != null && !proxy.isEmpty()) {
+                URL url = new URL(proxy);
                 this.builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(url.getHost(), url.getPort())));
             }
             return this;
-        } catch (Exception e) {
+        } catch (MalformedURLException e) {
             throw new NailException(e.getMessage(), e);
         }
 
