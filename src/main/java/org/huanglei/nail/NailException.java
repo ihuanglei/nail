@@ -21,4 +21,8 @@ public class NailException extends RuntimeException {
     public NailException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public NailException(Throwable cause) {
+        super(cause);
+    }
 }

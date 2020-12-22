@@ -17,6 +17,8 @@
 package org.huanglei.nail;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +33,8 @@ public class NailRequest {
     public enum Protocol {
         HTTP, HTTPS
     }
+
+    private String url;
 
     private Protocol protocol;
 
@@ -63,6 +67,24 @@ public class NailRequest {
 
     public static NailRequest create() {
         return new NailRequest();
+    }
+
+    public NailRequest url(String url) {
+        try {
+            URL u = new URL(url);
+            host = u.getHost();
+            path = u.getPath();
+            port = u.getPort();
+            protocol = "https".equalsIgnoreCase(u.getProtocol()) ? Protocol.HTTPS : Protocol.HTTP;
+        } catch (MalformedURLException e) {
+            throw new NailException(e);
+        }
+
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public Protocol getProtocol() {
