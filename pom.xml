@@ -5,7 +5,7 @@
 
     <groupId>org.huanglei</groupId>
     <artifactId>nail</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6-SNAPSHOT</version>
 
     <name>nail</name>
     <url>https://huanglei.org</url>
@@ -43,7 +43,7 @@
         <connection>scm:git:git@github.com:ihuanglei/nail.git</connection>
         <developerConnection>scm:git:git@github.com:ihuanglei/nail.git</developerConnection>
         <url>https://github.com/ihuanglei/nail</url>
-        <tag>v0.0.5</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
