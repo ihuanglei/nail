@@ -50,7 +50,8 @@ public class NailHttpClientHelper {
                 .connectTimeout(option.getConnectTimeout())
                 .readTimeout(option.getReadTimeout())
                 .connectionPool(option.getMaxIdleConns())
-                .certificate(option.isIgnoreSSL())
+                .isIgnoreSSL(option.isIgnoreSSL())
+                .certificate(option.getCertInputStream(), option.getCertPassword())
                 .proxy(option.getProxy())
                 .build();
     }

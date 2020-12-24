@@ -22,13 +22,17 @@ import org.huanglei.nail.NailException;
 import org.huanglei.nail.TrueHostnameVerifier;
 import org.huanglei.nail.X509TrustManagerImp;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
 public class NailHttpClientBuilder {
@@ -70,12 +74,12 @@ public class NailHttpClientBuilder {
         return this;
     }
 
-    public NailHttpClientBuilder certificate(Boolean ignoreSSL) {
+    public NailHttpClientBuilder isIgnoreSSL(Boolean ignoreSSL) {
         try {
             if (ignoreSSL != null && ignoreSSL) {
                 X509TrustManager compositeX509TrustManager = new X509TrustManagerImp();
                 SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(null, new TrustManager[]{compositeX509TrustManager}, new java.security.SecureRandom());
+                sslContext.init(null, new TrustManager[]{compositeX509TrustManager}, new SecureRandom());
                 this.builder.sslSocketFactory(sslContext.getSocketFactory(), compositeX509TrustManager).
                         hostnameVerifier(new TrueHostnameVerifier());
             }
@@ -83,7 +87,29 @@ public class NailHttpClientBuilder {
         } catch (Exception e) {
             throw new NailException(e.getMessage(), e);
         }
+    }
 
+    public NailHttpClientBuilder certificate(InputStream inputStream, String password) {
+        if (inputStream == null) {
+            return this;
+        }
+        try {
+            password = password == null || password.isEmpty() ? "" : password;
+            KeyStore keyStore = KeyStore.getInstance("PKCS12");
+            keyStore.load(inputStream, password.toCharArray());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                    .getInstance(KeyManagerFactory.getDefaultAlgorithm());
+            keyManagerFactory.init(keyStore, password.toCharArray());
+
+            X509TrustManager compositeX509TrustManager = new X509TrustManagerImp();
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory.getKeyManagers(), new TrustManager[]{compositeX509TrustManager}, new SecureRandom());
+            this.builder.sslSocketFactory(sslContext.getSocketFactory(), compositeX509TrustManager).
+                    hostnameVerifier(new TrueHostnameVerifier());
+            return this;
+        } catch (Exception e) {
+            throw new NailException(e.getMessage(), e);
+        }
     }
 
     public NailHttpClientBuilder proxy(String proxy) {

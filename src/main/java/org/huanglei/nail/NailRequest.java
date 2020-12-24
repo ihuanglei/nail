@@ -79,7 +79,7 @@ public class NailRequest {
         } catch (MalformedURLException e) {
             throw new NailException(e);
         }
-
+        header("Host", host);
         return this;
     }
 
@@ -162,6 +162,7 @@ public class NailRequest {
 
     public NailRequest body(InputStream body) {
         this.body = body;
+        this.method = Method.POST;
         return this;
     }
 

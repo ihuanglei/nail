@@ -16,6 +16,7 @@
 
 package org.huanglei.nail;
 
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +35,10 @@ public class NailOption {
     private Boolean ignoreSSL;
 
     private Integer retry;
+
+    private InputStream certInputStream;
+
+    private String certPassword;
 
     private Map<String, Object> param;
 
@@ -68,6 +73,14 @@ public class NailOption {
     public NailOption showLog(Boolean showLog) {
         this.showLog = showLog;
         return this;
+    }
+
+    public void certInputStream(InputStream certInputStream) {
+        this.certInputStream = certInputStream;
+    }
+
+    public void certPassword(String certPassword) {
+        this.certPassword = certPassword;
     }
 
     public NailOption other(String key, Object value) {
@@ -111,6 +124,14 @@ public class NailOption {
 
     public Boolean isIgnoreSSL() {
         return ignoreSSL;
+    }
+
+    public InputStream getCertInputStream() {
+        return certInputStream;
+    }
+
+    public String getCertPassword() {
+        return certPassword;
     }
 
     public Map<String, Object> getParam() {

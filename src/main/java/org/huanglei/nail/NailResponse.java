@@ -33,7 +33,7 @@ public class NailResponse {
 
     private String statusMessage;
 
-    private Map<String, String> headers = new HashMap<>();
+    private Map<String, String> header = new HashMap<>();
 
     private InputStream body;
 
@@ -45,7 +45,7 @@ public class NailResponse {
         Headers headers = response.headers();
         Map<String, List<String>> resultHeaders = headers.toMultimap();
         for (Map.Entry<String, List<String>> entry : resultHeaders.entrySet()) {
-            this.headers.put(entry.getKey(), String.join(";", entry.getValue()));
+            this.header.put(entry.getKey(), String.join(";", entry.getValue()));
         }
     }
 
@@ -57,8 +57,8 @@ public class NailResponse {
         return statusMessage;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public Map<String, String> getHeader() {
+        return header;
     }
 
     public InputStream getResponse() {
