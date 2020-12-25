@@ -75,12 +75,14 @@ public class NailOption {
         return this;
     }
 
-    public void certInputStream(InputStream certInputStream) {
+    public NailOption certInputStream(InputStream certInputStream) {
         this.certInputStream = certInputStream;
+        return this;
     }
 
-    public void certPassword(String certPassword) {
+    public NailOption certPassword(String certPassword) {
         this.certPassword = certPassword;
+        return this;
     }
 
     public NailOption other(String key, Object value) {
